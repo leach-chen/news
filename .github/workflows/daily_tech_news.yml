@@ -1,0 +1,30 @@
+name: 每日科技资讯推送
+
+on:
+  schedule:
+    # 每天早上7点运行 (UTC时间 23:00 = 北京时间 7:00)
+    - cron: '0 23 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout代码
+        uses: actions/checkout@v4
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: |
+          pip install -r requirements.txt
+
+      - name: 运行抓取脚本
+        env:
+          SEND_KEY: ${{ secrets.SEND_KEY }}
+        run: |
+          python fetch_news.py
